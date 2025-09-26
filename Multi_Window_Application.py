@@ -1,5 +1,5 @@
 ###################IMPORTS##########################################################
-
+## THOMAS WAS HERE
 from google import genai
 import tkinter as tk
 
@@ -94,5 +94,6 @@ for x in range(0,3):
         help_desk.rowconfigure(y,weight = 1)
 
 window.mainloop()
+
 
 
