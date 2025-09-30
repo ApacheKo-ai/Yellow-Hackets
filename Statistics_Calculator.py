@@ -9,7 +9,7 @@ Forget = []
 Destroy = []
 
 window = tk.Tk()
-window.geometry("500x200")
+window.geometry("500x500")
 window.configure(bg = "black") # Probably Remove this or implement it into a theme option. Currently for Seeing Blank Space Eaiser
 
 ##################################################################################
@@ -95,140 +95,322 @@ def Variance_and_Deviation(type):
 # 4. GROUPED MEAN AND VARIANCE
 ##################################################################################
 
-def Grouped_Mean_and_Variance():
-	classes = int(input("Number of Classes: "))
-	size = Decimal(input("Class Size: "))
-	smallest = Decimal(input("Minimum Number: "))
-	largest = Decimal(input("Largest Number: "))
+def Grouped_Mean_and_Variance(type):
+	size = int(Entry_1.get())
+
+	full = Entry_2.get()
+	if full == "":
+		return
+	num = ""
+	for c in range(len(full)):
+		if full[c].isdecimal():
+			num += str(full[c])
+		elif full[c] == '.':
+			num += str(full[c])
+		else:
+			smallest = (float(num))
+			num = ""
+	largest = (float(num))
+
 	start = smallest
 	end = start + size
 	mean = 0
 	variance = 0
 	deviation = 0
-	num = 0
+	total = 0
+	observations = []
+
+	full = Entry_3.get()
+	if full == "":
+		return
+	num = ""
+	for c in range(len(full)):
+		if full[c].isdecimal():
+			num += str(full[c])
+		elif full[c] == '.':
+			num += str(full[c])
+		else:
+			observations.append(float(num))
+			num = ""
+	observations.append(float(num))
+
+	classes = len(observations)
+
 	for x in range(classes):
-		print(str(start) + " | " + str(end))
 		mid = (start + end)/2
-		obv = Decimal(input("Observations in the " + str(x) + " Class: "))
-		num += obv
-		mean += (mid*obv)
-		variance += (pow(mid,2) * obv)
-		start = end+1 # Whole Numbers is +1, decimals is Decimal(0.1)
+		
+		total += observations[x]
+		mean += (mid*observations[x])
+		variance += (pow(mid,2) * observations[x])
+
+		if str(observations[x]).split(".")[1][-1] == "0":
+			start = end+1 # Whole Numbers is +1, decimals is Decimal(0.1)
+		else:
+			start = end + 0.1
 		end = start + size
-	variance = (variance-(pow(mean,2)/num))/(num-1 ) # -1 is sample, remove it for population
-	print("Mean: " + str(mean/num))
-	print("Variance: " + str(variance))
-	print("Deviation: " + str(math.sqrt(variance)))
+
+	if type:
+		variance = (variance-(pow(mean,2)/total))/(total-1 ) # -1 is sample, remove it for population
+	else:
+		variance = (variance-(pow(mean,2)/total))/(total)
+
+	Outry.delete(1.0,tk.END)
+	Outry.insert("1.0", f"Mean: {mean/total}\nVariance: {variance}\nDeviation: {math.sqrt(variance)}")
+
 
 ##################################################################################
 # 5. PROPORTIONS
 ##################################################################################
 
 def Proportions():
-	obv = float(input("Number of Observations: "))
-	total = float(input("Number of Observations Total: "))
-	sample = float(input("Sample?: "))
+	obv = 0
+
+	full = Entry_1.get()
+	if full == "":
+		return
+	num = ""
+	for c in range(len(full)):
+		if full[c].isdecimal():
+			num += str(full[c])
+		elif full[c] == '.':
+			num += str(full[c])
+		else:
+			if obv == 0:
+				obv = (float(num))
+			else:
+				total = (float(num))
+			num = ""
+	sample = (float(num))
+
 	pp = (obv/total)
 	sp = (obv/sample)
-	print("Population Proportion: " + str(pp))
-	print("Sample Proportion: " + str(sp)) 
+
+	Outry.delete(1.0,tk.END)
+	Outry.insert("1.0", f"Population Proportion: {pp}\nSample Proportion: {sp}")
 
 ##################################################################################
 # 6. CORRELATION COEFFICIENT
 ##################################################################################
 
 def Corralation_Coefficient():
-	dp = int(input("Data Points: "))
+
+	xi = []
+	full = Entry_1.get()
+	if full == "":
+		return
+	num = ""
+	for c in range(len(full)):
+		if full[c].isdecimal():
+			num += str(full[c])
+		elif full[c] == '.':
+			num += str(full[c])
+		else:
+			xi.append(float(num))
+			num = ""
+	xi.append(float(num))
+
+	yi = []
+	full = Entry_2.get()
+	if full == "":
+		return
+	num = ""
+	for c in range(len(full)):
+		if full[c].isdecimal():
+			num += str(full[c])
+		elif full[c] == '.':
+			num += str(full[c])
+		else:
+			yi.append(float(num))
+			num = ""
+	yi.append(float(num))
+	print(xi)
+	print(yi)
 	x = 0
 	x2 = 0
 	y = 0
 	y2 = 0
 	num = 0
-	for v in range(dp):
-		xi = (float(input("X: ")))
-		yi = (float(input("Y: ")))
-		x += xi
-		y += yi
-		x2 += math.pow(xi,2)
-		y2 += math.pow(yi,2)
-		num += (xi * yi)
-
+	for v in range(len(xi)):
+		x += xi[v]
+		y += yi[v]
+		x2 += math.pow(xi[v],2)
+		y2 += math.pow(yi[v],2)
+		num += (xi[v] * yi[v])
+	dp = len(xi)
 	top = ((dp*num)-(x*y))
 	bottom = ((math.sqrt((dp*x2)-math.pow(x,2)))*(math.sqrt((dp*y2)-math.pow(y,2))))
-	
-	print("Corralation Coefficient: " + str(top/bottom))
+
+	Outry.delete(1.0,tk.END)
+	Outry.insert("1.0", "Corralation Coefficient: " + str(top/bottom))
 
 ##################################################################################
 # 7. SUM OF SQUARED ERROR
 ##################################################################################
 
 def Sum_of_Squared_Error():
-	rows = int(input("Rows: "))
-	a = float(input("A: "))
-	b = float(input("B: "))
+
+	full = Entry_1.get()
+	if full == "":
+		return
+	num = ""
+	for c in range(len(full)):
+		if full[c].isdecimal():
+			num += str(full[c])
+		elif full[c] == '.':
+			num += str(full[c])
+		else:
+			a = (float(num))
+			num = ""
+	b = (float(num))
+
+	x = []
+	full = Entry_2.get()
+	if full == "":
+		return
+	num = ""
+	for c in range(len(full)):
+		if full[c].isdecimal():
+			num += str(full[c])
+		elif full[c] == '.':
+			num += str(full[c])
+		else:
+			x.append(float(num))
+			num = ""
+	x.append(float(num))
+
+	y = []
+	full = Entry_3.get()
+	if full == "":
+		return
+	num = ""
+	for c in range(len(full)):
+		if full[c].isdecimal():
+			num += str(full[c])
+		elif full[c] == '.':
+			num += str(full[c])
+		else:
+			y.append(float(num))
+			num = ""
+	y.append(float(num))
+
 	num = 0
-	for r in range(rows):
-		c1 = float(input("X: "))
-		c2 = float(input("Y: "))
-		pred = a + (b*c2)
-		err = pred - c1
+	for r in range(len(x)):
+
+		pred = a + (b*y[r])
+		err = pred - x[r]
 		num += math.pow(err,2)
-	MsE = num/(rows-2)
+	MsE = num/(len(x)-2)
 	Se = math.sqrt(MsE)
-	print("SSE: " + str(num))
-	print("MSE: " + str(MsE))
-	print("SE: " + str(Se))
+
+	Outry.delete(1.0,tk.END)
+	Outry.insert("1.0", f"SSE: {num}\nMSE: {MsE}\nSE: {Se}")
 
 ##################################################################################
 # 8. ESTIMATE PARAMETERS
 ##################################################################################
 
 def Estimate_Parameters():
+
 	table = sk.linear_model.LinearRegression()
-	rows = int(input("Number of Rows: "))
+
 	x = []
+	full = Entry_1.get()
+	if full == "":
+		return
+	num = ""
+	for c in range(len(full)):
+		if full[c].isdecimal():
+			num += str(full[c])
+		elif full[c] == '.':
+			num += str(full[c])
+		else:
+			x.append([float(num)])
+			num = ""
+	x.append([float(num)])
+
 	y = []
-	for r in range(rows):
-		x.append([float(input("X: "))])
-		y.append(float(input("Y: ")))
+	full = Entry_2.get()
+	if full == "":
+		return
+	num = ""
+	for c in range(len(full)):
+		if full[c].isdecimal():
+			num += str(full[c])
+		elif full[c] == '.':
+			num += str(full[c])
+		else:
+			y.append(float(num))
+			num = ""
+	y.append(float(num))
 
 	table.fit(x,y)
 
-	print("C: " + str(table.coef_))
-	print("I: " + str(table.intercept_))
+	Outry.delete(1.0,tk.END)
+	Outry.insert("1.0", f"C: {table.coef_}\nI: {table.intercept_}")
 
 ##################################################################################
 # 9. EVALUATING FIT OF A LINEAR MODEL
 ##################################################################################
 
 def Evaluating_Fit_of_Linear_Model():
+
+	xx = []
+	full = Entry_2.get()
+	if full == "":
+		return
+	num = ""
+	for c in range(len(full)):
+		if full[c].isdecimal():
+			num += str(full[c])
+		elif full[c] == '.':
+			num += str(full[c])
+		else:
+			xx.append(float(num))
+			num = ""
+	xx.append(float(num))
+
+	yy = []
+	full = Entry_2.get()
+	if full == "":
+		return
+	num = ""
+	for c in range(len(full)):
+		if full[c].isdecimal():
+			num += str(full[c])
+		elif full[c] == '.':
+			num += str(full[c])
+		else:
+			yy.append(float(num))
+			num = ""
+	yy.append(float(num))
+
 	x = 0
 	y = 0
 	xy = 0
 	x2 = 0
 	y2 = 0
 	save = 0
-	rows = int(input("Number of Rows: "))
+
+	rows = len(xx)
 	for r in range(rows):
-		xx = (float(input("X: ")))
+		
 		if save == 0:
-			save += xx
-		yy = (float(input("Y: ")))
-		x += xx
-		y += yy
-		xy += (xx*yy)
-		x2 += math.pow(xx,2)
-		y2 += math.pow(yy,2)
+			save += xx[r]
+		
+		x += xx[r]
+		y += yy[r]
+		xy += (xx[r]*yy[r])
+		x2 += math.pow(xx[r],2)
+		y2 += math.pow(yy[r],2)
 
 	slope = (rows*(xy) -(x*y))/(rows*(x2)-math.pow(x,2))
 	intercept = (1/rows)*(y-(slope*x))
 	difference = (intercept + ((save+1)*slope))-(intercept + (save*slope))
 	CoD = math.pow((((rows*xy)-(x*y))/(math.sqrt(((rows*x2)-math.pow(x,2))*((rows*y2)-math.pow(y,2))))),2)
 	MsE = CoD/(rows-2)
-	print("Y-Intercept: " + str(intercept))
-	print("Slope: " + str(slope))
-	print("Difference: " + str(difference))
-	print("COD: " + str(CoD))
+
+	Outry.delete(1.0,tk.END)
+	Outry.insert("1.0", f"Y-Intercept: {intercept}\nSlope: {slope}\nDifference: {difference}\nCOD: {CoD}")
 
 ##################################################################################
 # 10. RESET
@@ -266,9 +448,9 @@ def Reset():
 # Set Up Each Set Of Objects, Try To Follow Similar Naming Conventions
 # Reprogram Each Function to Work With Entries Instead of Input
 
-Entry_1 = tk.Entry(master = window, relief = tk.SOLID)
-Entry_2 = tk.Entry(master = window, relief = tk.SOLID)
-Entry_3 = tk.Entry(master = window, relief = tk.SOLID)
+Entry_1 = tk.Entry(master = window, font=("Arial", 18), relief = tk.SOLID)
+Entry_2 = tk.Entry(master = window, font=("Arial", 18), relief = tk.SOLID)
+Entry_3 = tk.Entry(master = window, font=("Arial", 18), relief = tk.SOLID)
 
 Outry = tk.Text(master = window, relief = tk.SOLID)
 
@@ -295,7 +477,6 @@ def Config(task):
 				else:
 					pass
 		
-
 		Forget.extend([Entry_1,Outry,Back_Button,Button_1])
 		Destroy.extend([l1])
 
@@ -316,7 +497,6 @@ def Config(task):
 				else:
 					pass
 		
-
 		Forget.extend([Entry_1,Entry_2,Outry,Back_Button,Button_1])
 		Destroy.extend([l1,l2])
 
@@ -325,7 +505,6 @@ def Config(task):
 		l1 = tk.Label(master = window, text = "Enter Numbers Seperated By Commas")
 		Outry.config(height = 4)
 		Button_1.config(text = "Population", command = lambda: Variance_and_Deviation(False))
-		Layout = [[]]
 		Button_2.config(text = "Standard", command = lambda: Variance_and_Deviation(True))
 		Layout = [[False,l1,False],[False,Entry_1,False],[False,Outry,False],[Back_Button,Button_1,Button_2]]
 		for r in range(len(Layout)):
@@ -338,31 +517,136 @@ def Config(task):
 				else:
 					pass
 		
-
 		Forget.extend([Entry_1,Outry,Back_Button,Button_1,Button_2])
 		Destroy.extend([l1])
 
-	elif task.lower() == "gmv":
-		print("GMV")
-	elif task.lower() == "pro":
-		print("PRO")
-	elif task.lower() == "cc":
-		print("CC")
-	elif task.lower() == "sse":
-		print("SSE")
-	elif task.lower() == "ep":
-		print("EP")
-	elif task.lower() == "elm":
-		print("ELM")
+	elif task.lower() == "gmv": ##GROUPED_MEAN_AND_VARIANCE##
+
+		Outry.config(height = 3)
+		Button_1.config(text = "Population", command = lambda: Grouped_Mean_and_Variance(False))
+		Button_2.config(text = "Standard", command = lambda: Grouped_Mean_and_Variance(True))
+		l1 = tk.Label(master = window, text = "↓Size of a Class↓")
+		l2 = tk.Label(master = window, text = "↓Smallest Number, Largest Number↓")
+		l3 = tk.Label(master = window, text = "↓Observations per Class, Seperated by Commas↓")
+		Layout = [[False,l1,False],[False,Entry_1,False],[False,l2,False],[False,Entry_2,False],[False,l3,False],[False,Entry_3,False],[False,Outry,False],[Back_Button,Button_1,Button_2]]
+		for r in range(len(Layout)):
+			for c in range(len(Layout[r])):
+				if Layout[r][c]:
+					if (c == 1) and not (Layout[r][c-1]) and not (Layout[r][c+1]):
+						Layout[r][c].grid(row = r, column = c-1, columnspan=3, pady = 2, sticky = "nsew")
+					else:
+						Layout[r][c].grid(row = r, column = c, pady = 2, sticky = "nsew")
+				else:
+					pass
+		
+		Forget.extend([Entry_1,Entry_2,Entry_3,Outry,Back_Button,Button_1,Button_2])
+		Destroy.extend([l1,l2,l3])
+
+	elif task.lower() == "pro":  ##PROPORTIONS##
+
+		l1 = tk.Label(master = window, text = "↓Observations, Total Observations, Sample Size↓")
+		Outry.config(height = 2)
+		Button_1.config(text = "Calculate", command = lambda: Proportions())
+		Layout = [[False,l1,False],[False,Entry_1,False],[False,Outry,False],[Back_Button,False,Button_1]]
+		for r in range(len(Layout)):
+			for c in range(len(Layout[r])):
+				if Layout[r][c]:
+					if (c == 1) and not (Layout[r][c-1]) and not (Layout[r][c+1]):
+						Layout[r][c].grid(row = r, column = c-1, columnspan=3, pady = 2, sticky = "nsew")
+					else:
+						Layout[r][c].grid(row = r, column = c, pady = 2, sticky = "nsew")
+				else:
+					pass
+		
+		Forget.extend([Entry_1,Outry,Back_Button,Button_1])
+		Destroy.extend([l1])
+
+	elif task.lower() == "cc":  ##CORALATION_COEFFICENT##
+
+		l1 = tk.Label(master = window, text = "↓X Values↓")
+		l2 = tk.Label(master = window, text = "↓Y Values↓")
+		Outry.config(height = 1)
+		Button_1.config(text = "Calculate", command = lambda: Corralation_Coefficient())
+		Layout = [[False,l1,False],[False,Entry_1,False],[False,l2,False],[False,Entry_2,False],[False,Outry,False],[Back_Button,False,Button_1]]
+		for r in range(len(Layout)):
+			for c in range(len(Layout[r])):
+				if Layout[r][c]:
+					if (c == 1) and not (Layout[r][c-1]) and not (Layout[r][c+1]):
+						Layout[r][c].grid(row = r, column = c-1, columnspan=3, pady = 2, sticky = "nsew")
+					else:
+						Layout[r][c].grid(row = r, column = c, pady = 2, sticky = "nsew")
+				else:
+					pass
+		
+		Forget.extend([Entry_1,Entry_2,Outry,Back_Button,Button_1])
+		Destroy.extend([l1,l2])
+
+	elif task.lower() == "sse": ##SUM_OF_SQUARED_ERROR##
+
+		Outry.config(height = 3)
+		Button_1.config(text = "Calculate", command = lambda: Sum_of_Squared_Error())
+		l1 = tk.Label(master = window, text = "↓A, B↓")
+		l2 = tk.Label(master = window, text = "↓X Values↓")
+		l3 = tk.Label(master = window, text = "↓Y Values↓")
+		Layout = [[False,l1,False],[False,Entry_1,False],[False,l2,False],[False,Entry_2,False],[False,l3,False],[False,Entry_3,False],[False,Outry,False],[Back_Button,False,Button_1]]
+		for r in range(len(Layout)):
+			for c in range(len(Layout[r])):
+				if Layout[r][c]:
+					if (c == 1) and not (Layout[r][c-1]) and not (Layout[r][c+1]):
+						Layout[r][c].grid(row = r, column = c-1, columnspan=3, pady = 2, sticky = "nsew")
+					else:
+						Layout[r][c].grid(row = r, column = c, pady = 2, sticky = "nsew")
+				else:
+					pass
+		
+		Forget.extend([Entry_1,Entry_2,Entry_3,Outry,Back_Button,Button_1])
+		Destroy.extend([l1,l2,l3])
+
+	elif task.lower() == "ep":  ##ESTIMATE_PARAMETERS##
+
+		l1 = tk.Label(master = window, text = "↓X Values↓")
+		l2 = tk.Label(master = window, text = "↓Y Values↓")
+		Outry.config(height = 2)
+		Button_1.config(text = "Calculate", command = lambda: Estimate_Parameters())
+		Layout = [[False,l1,False],[False,Entry_1,False],[False,l2,False],[False,Entry_2,False],[False,Outry,False],[Back_Button,False,Button_1]]
+		for r in range(len(Layout)):
+			for c in range(len(Layout[r])):
+				if Layout[r][c]:
+					if (c == 1) and not (Layout[r][c-1]) and not (Layout[r][c+1]):
+						Layout[r][c].grid(row = r, column = c-1, columnspan=3, pady = 2, sticky = "nsew")
+					else:
+						Layout[r][c].grid(row = r, column = c, pady = 2, sticky = "nsew")
+				else:
+					pass
+		
+		Forget.extend([Entry_1,Entry_2,Outry,Back_Button,Button_1])
+		Destroy.extend([l1,l2])
+
+	elif task.lower() == "elm":  ##EVALUATING_FIT_OF_LINEAR_MODEL##
+
+		l1 = tk.Label(master = window, text = "↓X Values↓")
+		l2 = tk.Label(master = window, text = "↓Y Values↓")
+		Outry.config(height = 4)
+		Button_1.config(text = "Calculate", command = lambda: Evaluating_Fit_of_Linear_Model())
+		Layout = [[False,l1,False],[False,Entry_1,False],[False,l2,False],[False,Entry_2,False],[False,Outry,False],[Back_Button,False,Button_1]]
+		for r in range(len(Layout)):
+			for c in range(len(Layout[r])):
+				if Layout[r][c]:
+					if (c == 1) and not (Layout[r][c-1]) and not (Layout[r][c+1]):
+						Layout[r][c].grid(row = r, column = c-1, columnspan=3, pady = 2, sticky = "nsew")
+					else:
+						Layout[r][c].grid(row = r, column = c, pady = 2, sticky = "nsew")
+				else:
+					pass
+		
+		Forget.extend([Entry_1,Entry_2,Outry,Back_Button,Button_1])
+		Destroy.extend([l1,l2])
+
 	for col in range(len(Layout[c])):
 		window.columnconfigure(col, weight=1)
 	for row in range(len(Layout[r])): 
 		window.rowconfigure(row, weight=1)
 
-	# Configure The Objects For Each Function, Including Setting Text and Commands.
-	# Place Objects On Screen In a Location That Makes Sense
-	# When the Go Button That Gets Placed Gets Pressed, Call Shoot().
-	# When Reseting To Home, Set All Entries and Outry To Be Empty
 
 ###############################################################################
 
@@ -371,46 +655,9 @@ def press(task):
 	Home.grid_forget()
 	Config(task)
 
-	
-
 #############################################################################
 
-def Shoot(task):
-	if task.lower() == "sort":
-		print("SORT")
-	elif task.lower() == "per":
-		print("PER")
-	elif task.lower() == "vd":
-		print("VD")
-	elif task.lower() == "gmv":
-		print("GMV")
-	elif task.lower() == "pro":
-		print("PRO")
-	elif task.lower() == "cc":
-		print("CC")
-	elif task.lower() == "sse":
-		print("SSE")
-	elif task.lower() == "ep":
-		print("EP")
-	elif task.lower() == "elm":
-		print("ELM")
-
-
-#################################################################################
-
-
 Home = tk.Frame(master = window, bg = "black")
-
-SorFrame = tk.Frame(master = window, bg = "black")   # Sort
-PerFrame = tk.Frame(master = window, bg = "black")   # Percentile
-VaDFrame = tk.Frame(master = window, bg = "black")   # Variance and Deviation
-GMVFrame = tk.Frame(master = window, bg = "black")   # Grouped Mean and Variance
-ProFrame = tk.Frame(master = window, bg = "black")   # Proportions
-CCoFrame = tk.Frame(master = window, bg = "black")   # Correlation Coefficient
-SSEFrame = tk.Frame(master = window, bg = "black")   # Sum of Squared Error
-EPaFrame = tk.Frame(master = window, bg = "black")   # Estimate Parameters
-ELMFrame = tk.Frame(master = window, bg = "black")   # Evaluating Fit of Linear Model
-
 
 frames  = []
 for x in range(9):
