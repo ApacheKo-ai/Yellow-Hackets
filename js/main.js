@@ -40,21 +40,59 @@ document.addEventListener('DOMContentLoaded', function() {
 // Simple form validation for future contact form
 function validateForm(formData) {
     const errors = [];
-    
+
+    // Helper: Email validation
+    const isValidEmail = (email) => {
+        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return pattern.test(email.trim());
+    };
+
+    // Helper: Name validation (letters, spaces, hyphens only)
+    const isValidName = (name) => {
+        const pattern = /^[A-Za-z\s\-']{2,50}$/;
+        return pattern.test(name.trim());
+    };
+
+    // ✅ Name validation
     if (!formData.name || formData.name.trim() === '') {
-        errors.push('Name is required');
+        errors.push('Name is required.');
+    } else if (!isValidName(formData.name)) {
+        errors.push('Name should contain only letters and spaces (2–50 characters).');
     }
-    
-    if (!formData.email || !isValidEmail(formData.email)) {
-        errors.push('Valid email is required');
+
+    // ✅ Email validation
+    if (!formData.email || formData.email.trim() === '') {
+        errors.push('Email is required.');
+    } else if (!isValidEmail(formData.email)) {
+        errors.push('Please enter a valid email address (e.g., name@example.com).');
     }
-    
+
+    // ✅ Message validation
     if (!formData.message || formData.message.trim() === '') {
-        errors.push('Message is required');
+        errors.push('Message is required.');
+    } else if (formData.message.trim().length < 10) {
+        errors.push('Message should be at least 10 characters long.');
+    } else if (formData.message.trim().length > 1000) {
+        errors.push('Message should not exceed 1000 characters.');
     }
-    
+
+    // ✅ (Optional) Phone number validation (if added in formData)
+    if (formData.phone) {
+        const phonePattern = /^[0-9+\-\s]{7,15}$/;
+        if (!phonePattern.test(formData.phone.trim())) {
+            errors.push('Please enter a valid phone number (digits, +, -, or spaces).');
+        }
+    }
+
+    // ✅ (Optional) Subject field validation
+    if (formData.subject && formData.subject.trim().length > 100) {
+        errors.push('Subject should be less than 100 characters.');
+    }
+
+    // ✅ Return summary or individual errors
     return errors;
 }
+
 
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
